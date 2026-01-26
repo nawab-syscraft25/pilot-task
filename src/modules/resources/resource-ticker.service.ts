@@ -73,6 +73,7 @@ export class ResourceTickerService {
       this.logger.error('❌ Error during resource ticker', error);
     }
   }
+  
 
   /**
    * Manual tick for testing purposes
