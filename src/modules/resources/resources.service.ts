@@ -43,8 +43,8 @@ export class ResourcesService {
     resource.updatedAt = new Date();
 
     const updated = await this.resourceRepository.save(resource);
-    this.logger.log(
-      `Resources added to user ${userId}: +${wood} wood, +${food} food`,
+    this.logger.debug(
+      `Resources added to user ${userId}: +${wood} wood, +${food} food (Total: ${updated.wood}w, ${updated.food}f)`,
     );
 
     return updated;

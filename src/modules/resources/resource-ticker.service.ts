@@ -39,17 +39,35 @@ export class ResourceTickerService {
       }
 
       // Add resources to each user
+      let successCount = 0;
+      const tickedUsers: string[] = [];
+
       for (const user of users) {
-        await this.resourcesService.addResources(
-          user.id,
-          this.WOOD_PER_TICK,
-          this.FOOD_PER_TICK,
-        );
-        await this.resourcesService.updateLastTick(user.id);
+        try {
+          const updatedResource = await this.resourcesService.addResources(
+            user.id,
+            this.WOOD_PER_TICK,
+            this.FOOD_PER_TICK,
+          );
+          await this.resourcesService.updateLastTick(user.id);
+          
+          // Log individual user resource update
+          this.logger.log(
+            `👤 User ${user.username} (${user.id}): +${this.WOOD_PER_TICK} wood, +${this.FOOD_PER_TICK} food | Total: ${updatedResource.wood} wood, ${updatedResource.food} food`,
+          );
+          
+          tickedUsers.push(user.username);
+          successCount++;
+        } catch (error) {
+          this.logger.error(
+            `Failed to tick resources for user ${user.username} (${user.id})`,
+            error,
+          );
+        }
       }
 
       this.logger.log(
-        `✅ Resource tick completed for ${users.length} users. +${this.WOOD_PER_TICK} wood, +${this.FOOD_PER_TICK} food each`,
+        `✅ Resource tick completed for ${successCount}/${users.length} users. Users: [${tickedUsers.join(', ')}]`,
       );
     } catch (error) {
       this.logger.error('❌ Error during resource ticker', error);
