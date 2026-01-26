@@ -28,6 +28,7 @@ import { ConstructionTask } from './modules/upgrades/entities/construction-task.
         entities: [User, Resource, ResourceTickLog, ConstructionTask],
         synchronize: configService.get<string>('NODE_ENV') === 'development',
         logging: configService.get<string>('NODE_ENV') === 'development',
+        timezone: '+05:30', // IST timezone
         ssl:
           configService.get<string>('NODE_ENV') === 'production'
             ? { rejectUnauthorized: false }

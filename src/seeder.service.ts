@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../modules/users/entities/user.entity';
-import { Resource } from '../modules/resources/entities/resource.entity';
-import { ConstructionTask, ConstructionStatus } from '../modules/upgrades/entities/construction-task.entity';
+import { User } from './modules/users/entities/user.entity';
+import { Resource } from './modules/resources/entities/resource.entity';
+import { ConstructionTask, ConstructionStatus, UpgradeType } from './modules/upgrades/entities/construction-task.entity';
 
 @Injectable()
 export class SeederService {
@@ -114,8 +114,8 @@ export class SeederService {
     const tasksData = [
       // Player1 tasks
       {
-        user: users[0],
-        upgradeType: 'building',
+        userId: users[0].id,
+        upgradeType: UpgradeType.BUILDING,
         upgradeName: 'Woodcutter\'s Hut',
         woodCost: 50,
         foodCost: 30,
@@ -124,8 +124,8 @@ export class SeederService {
         createdAt: new Date(Date.now() - 3600000), // 1 hour ago
       },
       {
-        user: users[0],
-        upgradeType: 'building',
+        userId: users[0].id,
+        upgradeType: UpgradeType.BUILDING,
         upgradeName: 'Farm',
         woodCost: 60,
         foodCost: 40,
@@ -134,8 +134,8 @@ export class SeederService {
         createdAt: new Date(Date.now() - 300000), // 5 minutes ago
       },
       {
-        user: users[0],
-        upgradeType: 'upgrade',
+        userId: users[0].id,
+        upgradeType: UpgradeType.RESEARCH,
         upgradeName: 'Tool Workshop',
         woodCost: 80,
         foodCost: 50,
@@ -146,8 +146,8 @@ export class SeederService {
       
       // Hero2 tasks
       {
-        user: users[1],
-        upgradeType: 'building',
+        userId: users[1].id,
+        upgradeType: UpgradeType.BUILDING,
         upgradeName: 'Barracks',
         woodCost: 100,
         foodCost: 80,
@@ -156,8 +156,8 @@ export class SeederService {
         createdAt: new Date(Date.now() - 7200000), // 2 hours ago
       },
       {
-        user: users[1],
-        upgradeType: 'upgrade',
+        userId: users[1].id,
+        upgradeType: UpgradeType.RESEARCH,
         upgradeName: 'Storage Upgrade',
         woodCost: 40,
         foodCost: 40,
@@ -168,8 +168,8 @@ export class SeederService {
       
       // Builder3 tasks
       {
-        user: users[2],
-        upgradeType: 'building',
+        userId: users[2].id,
+        upgradeType: UpgradeType.BUILDING,
         upgradeName: 'Sawmill',
         woodCost: 70,
         foodCost: 50,
@@ -180,8 +180,8 @@ export class SeederService {
       
       // Newbie4 tasks
       {
-        user: users[3],
-        upgradeType: 'building',
+        userId: users[3].id,
+        upgradeType: UpgradeType.BUILDING,
         upgradeName: 'Small House',
         woodCost: 20,
         foodCost: 15,
@@ -192,8 +192,8 @@ export class SeederService {
       
       // Veteran5 tasks
       {
-        user: users[4],
-        upgradeType: 'building',
+        userId: users[4].id,
+        upgradeType: UpgradeType.BUILDING,
         upgradeName: 'Castle',
         woodCost: 300,
         foodCost: 250,
@@ -202,8 +202,8 @@ export class SeederService {
         createdAt: new Date(Date.now() - 14400000), // 4 hours ago
       },
       {
-        user: users[4],
-        upgradeType: 'upgrade',
+        userId: users[4].id,
+        upgradeType: UpgradeType.RESEARCH,
         upgradeName: 'Advanced Forge',
         woodCost: 150,
         foodCost: 120,
@@ -212,8 +212,8 @@ export class SeederService {
         createdAt: new Date(Date.now() - 900000), // 15 minutes ago
       },
       {
-        user: users[4],
-        upgradeType: 'building',
+        userId: users[4].id,
+        upgradeType: UpgradeType.BUILDING,
         upgradeName: 'Marketplace',
         woodCost: 200,
         foodCost: 150,
@@ -233,9 +233,10 @@ export class SeederService {
       const statusEmoji = 
         taskData.status === ConstructionStatus.COMPLETED ? '✅' :
         taskData.status === ConstructionStatus.IN_PROGRESS ? '⏳' : '⏸️';
-
+      
+      const user = users.find(u => u.id === taskData.userId);
       this.logger.log(
-        `${statusEmoji} ${taskData.user.username}: ${taskData.upgradeName} (${taskData.status})`,
+        `${statusEmoji} ${user?.username}: ${taskData.upgradeName} (${taskData.status})`,
       );
     }
 

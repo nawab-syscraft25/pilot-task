@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { ResourcesService } from './resources.service';
 import { ResourceTickLog } from './entities/resource-tick-log.entity';
+import { formatIST } from '../../config/timezone.config';
 
 @Injectable()
 export class ResourceTickerService {
@@ -68,8 +69,9 @@ export class ResourceTickerService {
           await this.tickLogRepository.save(tickLog);
           
           // Log individual user resource update
+          const istTime = formatIST(new Date());
           this.logger.log(
-            `👤 User ${user.username} (${user.id}): +${this.WOOD_PER_TICK} wood, +${this.FOOD_PER_TICK} food | Total: ${updatedResource.wood} wood, ${updatedResource.food} food`,
+            `👤 [${istTime}] User ${user.username} (${user.id}): +${this.WOOD_PER_TICK} wood, +${this.FOOD_PER_TICK} food | Total: ${updatedResource.wood} wood, ${updatedResource.food} food`,
           );
           
           tickedUsers.push(user.username);
@@ -96,8 +98,9 @@ export class ResourceTickerService {
         }
       }
 
+      const istTime = formatIST(new Date());
       this.logger.log(
-        `✅ Resource tick completed for ${successCount}/${users.length} users. Users: [${tickedUsers.join(', ')}]`,
+        `✅ [${istTime}] Resource tick completed for ${successCount}/${users.length} users. Users: [${tickedUsers.join(', ')}]`,
       );
     } catch (error) {
       this.logger.error('❌ Error during resource ticker', error);
