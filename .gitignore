@@ -6,7 +6,6 @@ dist
 *.log
 .git
 coverage
-.vscode
 .history/*
 .history
 
