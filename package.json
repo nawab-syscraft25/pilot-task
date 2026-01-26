@@ -12,7 +12,9 @@
     "start:prod": "node dist/main.js",
     "start:dev": "nest start --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest"
+    "test": "jest",
+    "seed": "ts-node -r tsconfig-paths/register src/seed.ts",
+    "seed:clear": "ts-node -r tsconfig-paths/register src/seed.ts clear"
   },
   "dependencies": {
     "@nestjs/bull": "^10.0.1",

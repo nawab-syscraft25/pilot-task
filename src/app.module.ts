@@ -10,6 +10,7 @@ import { ResourcesModule } from './modules/resources/resources.module';
 import { UpgradesModule } from './modules/upgrades/upgrades.module';
 import { User } from './modules/users/entities/user.entity';
 import { Resource } from './modules/resources/entities/resource.entity';
+import { ResourceTickLog } from './modules/resources/entities/resource-tick-log.entity';
 import { ConstructionTask } from './modules/upgrades/entities/construction-task.entity';
 
 @Module({
@@ -24,7 +25,7 @@ import { ConstructionTask } from './modules/upgrades/entities/construction-task.
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
-        entities: [User, Resource, ConstructionTask],
+        entities: [User, Resource, ResourceTickLog, ConstructionTask],
         synchronize: configService.get<string>('NODE_ENV') === 'development',
         logging: configService.get<string>('NODE_ENV') === 'development',
         ssl:

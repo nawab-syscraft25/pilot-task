@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { ResourcesService } from './resources.service';
+import { ResourceTickLog } from './entities/resource-tick-log.entity';
 
 @Injectable()
 export class ResourceTickerService {
@@ -16,6 +17,8 @@ export class ResourceTickerService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(ResourceTickLog)
+    private readonly tickLogRepository: Repository<ResourceTickLog>,
     private readonly resourcesService: ResourcesService,
   ) {}
 
@@ -51,6 +54,19 @@ export class ResourceTickerService {
           );
           await this.resourcesService.updateLastTick(user.id);
           
+          // Save tick log to database
+          const tickLog = this.tickLogRepository.create({
+            userId: user.id,
+            username: user.username,
+            woodAdded: this.WOOD_PER_TICK,
+            foodAdded: this.FOOD_PER_TICK,
+            totalWoodAfter: updatedResource.wood,
+            totalFoodAfter: updatedResource.food,
+            success: true,
+            errorMessage: null,
+          });
+          await this.tickLogRepository.save(tickLog);
+          
           // Log individual user resource update
           this.logger.log(
             `👤 User ${user.username} (${user.id}): +${this.WOOD_PER_TICK} wood, +${this.FOOD_PER_TICK} food | Total: ${updatedResource.wood} wood, ${updatedResource.food} food`,
@@ -59,6 +75,20 @@ export class ResourceTickerService {
           tickedUsers.push(user.username);
           successCount++;
         } catch (error) {
+          // Save error log to database
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          const tickLog = this.tickLogRepository.create({
+            userId: user.id,
+            username: user.username,
+            woodAdded: 0,
+            foodAdded: 0,
+            totalWoodAfter: user.resources?.wood || 0,
+            totalFoodAfter: user.resources?.food || 0,
+            success: false,
+            errorMessage,
+          });
+          await this.tickLogRepository.save(tickLog);
+          
           this.logger.error(
             `Failed to tick resources for user ${user.username} (${user.id})`,
             error,
@@ -73,7 +103,7 @@ export class ResourceTickerService {
       this.logger.error('❌ Error during resource ticker', error);
     }
   }
-  
+
 
   /**
    * Manual tick for testing purposes
