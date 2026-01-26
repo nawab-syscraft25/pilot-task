@@ -42,9 +42,12 @@ export class SeederService {
 
   private async clearDatabase(): Promise<void> {
     this.logger.log('🧹 Clearing existing data...');
-    await this.constructionTaskRepository.delete({});
-    await this.userRepository.delete({});
-    await this.resourceRepository.delete({});
+    
+    // Use query builder to delete all records
+    await this.constructionTaskRepository.createQueryBuilder().delete().execute();
+    await this.userRepository.createQueryBuilder().delete().execute();
+    await this.resourceRepository.createQueryBuilder().delete().execute();
+    
     this.logger.log('✅ Database cleared');
   }
 
